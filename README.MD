@@ -239,7 +239,7 @@ Use only one of the following at a time.
 
 ```json
 {
-  "type": "ConcentrationGenerator",
+  "type": "concentration",
   "sides": 5
 }
 ```
@@ -249,7 +249,7 @@ Use only one of the following at a time.
 
 ```json
 {
-  "type": "ConcentrationGenerator",
+  "type": "concentration",
   "sides": 8
 }
 ```
@@ -259,7 +259,7 @@ Use only one of the following at a time.
 
 ```json
 {
-  "type": "ConcentrationGenerator",
+  "type": "concentration",
   "bordered": true
 }
 ```
