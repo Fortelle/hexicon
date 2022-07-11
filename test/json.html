@@ -1,0 +1,72 @@
+<html>
+  <head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet">
+  </head>
+  <body class="text-center p5" style="background-color:#f2f2f2;">
+    <div class="container">
+      <div class="row">
+        <div class="card mt-5">
+          <div class="card-body p-5">
+            <div class="row">
+              <div class="col-12 col-md-7">
+                <div class="col-12 hexicon-canvas-large"></div>
+                <div class="col-12"></div>
+              </div>
+              <div class="col-12 col-md-5 ">
+                <textarea class="form-control hexicon-json" onchange="change()" style="height: 400px;"></textarea>
+                <div class="row">
+                  <div class="col-sm-9 offset-sm-3 text-end">
+                    <button type="button" class="btn btn-outline-primary" onclick="save()">Save</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document.querySelector(".hexicon-json").value = JSON.stringify({type:"square", level: 5}, null, 2);
+
+      let getOptions = () => {
+        let text = document.querySelector(".hexicon-json").value;
+        let json = JSON.parse(text);
+        return json;
+      };
+
+      window.save = async () => {
+        let handle = await window.showSaveFilePicker({
+          types: [
+            {
+              accept: {
+                'image/svg+xml': ['.svg'],
+              }
+            }
+          ]
+        }).catch(()=>{});
+        if(!handle) return;
+
+        let options = getOptions();
+        let hexicon = new Hexicon(options);
+
+        let file = await handle.getFile();
+        switch(file.type){
+          case 'image/svg+xml':
+            let svg = hexicon.toSVG(true);
+
+            let writable = await handle.createWritable();
+            await writable.write(svg);
+            await writable.close();
+        }
+      };
+
+      window.change = () => {
+        let options = getOptions();
+        let hexicon = new Hexicon(options);
+        document.querySelector(".hexicon-canvas-large").innerHTML = hexicon.toSVG();
+      };
+
+    </script>
+  </body>
+</html>

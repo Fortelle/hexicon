@@ -1,0 +1,164 @@
+<html>
+  <head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+      .hexicon-canvas-large svg {
+        width: 512px;
+        height: 512px;
+        background-color: #f2f2f2;
+      }
+
+      .hexicon-small {
+        background-color: #f2f2f2;
+        border-radius: 50%;
+        width: 64px;
+        height: 64px;
+      }
+
+      svg{
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body class="text-center p5" style="background-color:#f2f2f2;">
+    <div class="container">
+      <div class="row">
+        <div class="card mt-5">
+          <div class="card-body p-5">
+            <div class="row">
+              <div class="col-12 col-md-7">
+                <div class="col-12 hexicon-canvas-large"></div>
+                <div class="col-12"><hr></div>
+                <div class="col-12"><div class="d-flex flex-wrap hexicon-canvas-small"></div></div>
+              </div>
+              <form class="col-12 col-md-5 hexicon-form" onchange="change()" >
+                <div class="mb-3 row">
+                  <label class="col-sm-3 col-form-label">Style</label>
+                  <div class="col-sm-9">
+                    <select class="form-select" name="type" onchange="change()"></select>
+                  </div>
+                </div>
+
+                <div class="mb-3 row">
+                  <label class="col-sm-3 col-form-label">Level</label>
+                  <div class="col-sm-7">
+                    <input type="range" class="form-range" name="level" min="1" max="16" step="1" value="5">
+                  </div>
+                  <label class="col-sm-2 col-form-label"></label>
+                </div>
+
+                <div class="mb-3 row">
+                  <label class="col-sm-3 col-form-label">Sides</label>
+                  <div class="col-sm-7">
+                    <input type="range" class="form-range" name="sides" min="0" max="16" step="1" value="6">
+                  </div>
+                  <label class="col-sm-2 col-form-label"></label>
+                </div>
+
+                <div class="mb-3 row">
+                  <label class="col-sm-3 col-form-label">Minimum</label>
+                  <div class="col-sm-7">
+                    <input type="range" class="form-range" name="minimum" min="0" max="1" step="0.1" value="0.4">
+                  </div>
+                  <label class="col-sm-2 col-form-label"></label>
+                </div>
+
+                <div class="mb-3 row">
+                  <div class="col-sm-9 offset-sm-3 form-check form-switch text-start">
+                      <label class="col-form-label"><input class="form-check-input" type="checkbox" name="symmetrical" checked>Symmetrical</label>
+                  </div>
+              </div>
+
+                <div class="mb-3 row">
+                    <div class="col-sm-9 offset-sm-3 form-check form-switch text-start">
+                        <label class="col-form-label"><input class="form-check-input" type="checkbox" name="rotated">Rotated</label>
+                    </div>
+                </div>
+
+                <div class="mb-3 row">
+                  <div class="col-sm-9 offset-sm-3 form-check form-switch text-start">
+                      <label class="col-form-label"><input class="form-check-input" type="checkbox" name="bordered">Bordered</label>
+                  </div>
+                </div>
+
+                <div class="mb-3 row">
+                  <label class="col-sm-3 col-form-label">String</label>
+                  <div class="col-sm-9">
+                    <input class="form-control" type="text" name="string">
+                  </div>
+                </div>
+
+                <div class="mb-3 row">
+                  <div class="col-sm-9 offset-sm-3 text-end">
+                    <button type="button" class="btn btn-outline-primary" onclick="regenerate()">Regenerate</button>
+                    <button type="button" class="btn btn-outline-primary" onclick="save()">Save</button>
+                  </div>
+                </div>
+
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let form = document.querySelector(".hexicon-form");
+      let seeds = [];
+
+      window.onload = () => {
+        let types = Object.keys(Hexicon.types);
+        form.type.innerHTML = types.map(x=>`<option value=${x}>${x}</option>`).join('');
+        form.type.value = 'hexagon';
+        regenerate();
+      };
+
+      window.regenerate = () => {
+        seeds = new Array(13).fill().map(_ => Math.random().toString().slice(2));
+        change();
+      };
+
+      window.save = () => {
+        let options = getConfig();
+        let generator = hexicon.create({...options,size:128,background:"#f2f2f2",random: {string: options.string}});
+        generator.save();
+      };
+
+      let getConfig = () => {
+        let options = {
+          type: form.type.value,
+          level: ~~form.level.value,
+          sides: ~~form.sides.value,
+          minimum: form.minimum.value + 0,
+          rotated: !!form.rotated.checked,
+          symmetrical: !!form.symmetrical.checked,
+          bordered: !!form.bordered.checked,
+          string: form.string.value,
+        };
+        return options;
+      }
+
+      window.change = () => {
+        let options = getConfig();
+
+        form.level.parentElement.nextElementSibling.innerHTML = form.level.value;
+        form.sides.parentElement.nextElementSibling.innerHTML = form.sides.value;
+        form.minimum.parentElement.nextElementSibling.innerHTML = form.minimum.value;
+
+        {
+          let icon = new Hexicon({random: {string: options.string || seeds[0]}, ...options});
+          document.querySelector(".hexicon-canvas-large").innerHTML = icon.toSVG();
+        }
+
+        let html = '';
+        for (let i = 0; i < 12; i++) {
+          let icon = new Hexicon({random: {string: seeds[i+1]}, ...options});
+          html += `<div class="col-3 col-lg-2"><div class="hexicon-small m-2">${icon.toSVG()}</div></div>`;
+        }
+        document.querySelector(".hexicon-canvas-small").innerHTML = html;
+      };
+
+    </script>
+  </body>
+</html>

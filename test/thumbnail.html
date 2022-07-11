@@ -1,0 +1,79 @@
+<html>
+
+  <head>
+    <style>
+      .hexicon {
+          width: 1280px;
+          height: 678px;
+          background-color: #fff;
+          display: grid;
+          grid-template-columns: repeat(12, 1fr);
+          padding: 32px;
+          box-sizing: border-box;
+          align-items: center;
+          justify-items: center;
+      }
+
+      .hexicon div {
+        width: 80px;
+        height: 80px;
+        background: #f2f2f2;
+        box-sizing: border-box;
+      }
+
+      .hexicon div[data-type="hexagon"] {
+        border-radius: 50%;
+        padding: 4px;
+      }
+
+      .hexicon svg {
+        width: 100%;
+        height: 100%;
+        box-sizing: border-box;
+      }
+    </style>
+  </head>
+
+  <body class="text-center p5" style="background-color:#f2f2f2;">
+    <div class="hexicon">
+    </div>
+    <button class="randombutton">random</button>
+    <input type="textbox" class="seed" />
+
+    <script>
+      update = (seed) => {
+        let html = '';
+        for (let row = 0; row < 4; row++) {
+          for (let col = 0; col < 12; col++) {
+            let options = {
+              random: {
+                string: `${seed},${row},${col}`
+              },
+              type: ['square', 'hexagon', 'hexagon', 'concentration'][row],
+              level: [5, 4, 6, 6][row],
+              sides: 6,
+              minimum: 0.6,
+              rotated: col >= 6,
+              symmetrical: true,
+              bordered: [false,false, false, true][row],
+              color: 'normal',
+            };
+            let hexicon = new Hexicon(options);
+            html += `<div data-type="${options.type}">${hexicon.toSVG()}</div>`;
+          }
+        }
+        document.querySelector('.hexicon').innerHTML = html;
+        document.querySelector('.seed').value = seed;
+      };
+
+      refresh = () => {
+        update(Math.random());
+      };
+
+      window.onload = refresh;
+
+      document.querySelector('.randombutton').onclick = refresh;
+    </script>
+  </body>
+
+</html>
