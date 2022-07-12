@@ -101,7 +101,7 @@ Use only one of the following at a time.
 ```json
 {
   "type": "square",
-  "level": 6
+  "level": 8
 }
 ```
 
