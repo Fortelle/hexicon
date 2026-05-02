@@ -57,9 +57,9 @@
                 </div>
 
                 <div class="mb-3 row">
-                  <label class="col-sm-3 col-form-label">Minimum</label>
+                  <label class="col-sm-3 col-form-label">Threshold</label>
                   <div class="col-sm-7">
-                    <input type="range" class="form-range" name="minimum" min="0" max="1" step="0.1" value="0.4">
+                    <input type="range" class="form-range" name="threshold" min="0" max="1" step="0.1" value="0.4">
                   </div>
                   <label class="col-sm-2 col-form-label"></label>
                 </div>
@@ -68,7 +68,7 @@
                   <div class="col-sm-9 offset-sm-3 form-check form-switch text-start">
                       <label class="col-form-label"><input class="form-check-input" type="checkbox" name="symmetrical" checked>Symmetrical</label>
                   </div>
-              </div>
+                </div>
 
                 <div class="mb-3 row">
                     <div class="col-sm-9 offset-sm-3 form-check form-switch text-start">
@@ -110,7 +110,7 @@
       window.onload = () => {
         let types = Object.keys(Hexicon.types);
         form.type.innerHTML = types.map(x=>`<option value=${x}>${x}</option>`).join('');
-        form.type.value = 'hexagon';
+        form.type.value = 'square';
         regenerate();
       };
 
@@ -130,7 +130,7 @@
           type: form.type.value,
           level: ~~form.level.value,
           sides: ~~form.sides.value,
-          minimum: form.minimum.value + 0,
+          threshold: form.threshold.value + 0,
           rotated: !!form.rotated.checked,
           symmetrical: !!form.symmetrical.checked,
           bordered: !!form.bordered.checked,
@@ -144,7 +144,7 @@
 
         form.level.parentElement.nextElementSibling.innerHTML = form.level.value;
         form.sides.parentElement.nextElementSibling.innerHTML = form.sides.value;
-        form.minimum.parentElement.nextElementSibling.innerHTML = form.minimum.value;
+        form.threshold.parentElement.nextElementSibling.innerHTML = form.threshold.value;
 
         {
           let icon = new Hexicon({random: {string: options.string || seeds[0]}, ...options});

@@ -60,6 +60,14 @@ class Randomizer {
     return this.next() / 0x100000000;
   }
 
+  nextInt(min, max) {
+    if (max === undefined) {
+      max = min;
+      min = 0;
+    }
+    return min + Math.floor(nextFloat() * (max - min));
+  }
+
 }
 
 export default Randomizer;

@@ -8,6 +8,13 @@ class Generator {
       ... {
         size: 512,
         threshold: 0.5,
+        colorCount: 1,
+        minHue: 0,
+        maxHue: 360,
+        minSaturation: 60,
+        maxSaturation: 80,
+        minLightness: 60,
+        maxLightness: 80
       },
       ...defaultOptions ?? {},
       ...options ?? {},
@@ -63,15 +70,39 @@ class Generator {
     }
   }
 
+  getColors() {
+    let color = this.options.color;
+    let colorCount = ~~this.options.colorCount;
+    switch (color) {
+      case undefined:
+      case 'normal':
+      case 'light':
+      case 'dark': {
+        this.randomizer.reset();
+        let s = 60 + this.randomizer.nextFloat() * 20;
+        let l = color == 'light' ? 60 + this.randomizer.nextFloat() * 20
+          : color == 'dark' ? 40 - this.randomizer.nextFloat() * 20
+            : 40 + this.randomizer.nextFloat() * 20;
+        let hueStep = 360 / (colorCount * 2);
+        let hueStart = this.randomizer.nextFloat() * 360;
+        return [...Array(colorCount).keys()].map(i => {
+          let h = hueStart + hueStep * i * 2 + this.randomizer.nextFloat() * hueStep;
+          return `hsl(${h},${s}%,${l}%)`
+        });
+      }
+      default:
+        return color;
+    }
+  }
+
   getBool() {
     let sample = this.randomizer.next();
-    let bool = sample < this.threshold * 0xFFFFFFFF;
+    let bool = sample < this.options.threshold * 0xFFFFFFFF;
     return bool;
   }
 
   getBools(length) {
     let bools = [...Array(length)].map(_ => this.randomizer.nextBool());
-
     let minimum = Math.ceil((this.options.minimum ?? 0) * length);
     if (minimum > 0) {
       let indexes = bools
@@ -87,6 +118,25 @@ class Generator {
     }
 
     return bools;
+  }
+
+  getPatterns(length) {
+    let colorCount = ~~this.options.colorCount;
+    let threshold = this.options.threshold;
+    let thresholdValue = threshold * 0xFFFFFFFF;
+console.log(thresholdValue);
+    let patterns = [...Array(length)].map(_ => this.randomizer.next());
+    console.log(patterns);
+    if (colorCount == 1) {
+      return patterns.map(x => x < thresholdValue ? 0 : -1);
+    } else {
+      return patterns.map(x => x < thresholdValue ? Math.floor(x / thresholdValue * colorCount) : -1);
+    }
+  }
+
+  getInts(length, max) {
+    let ints = [...Array(length)].map(_ => this.randomizer.nextInt(max));
+    return ints;
   }
 
 }

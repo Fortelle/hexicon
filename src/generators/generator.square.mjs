@@ -17,24 +17,26 @@ class SquareGenerator extends Generator {
     if (level <= 0) return;
 
     let rightLength = this.options.symmetrical ? Math.ceil(level / 2) : level;
-    let fingerprint = this.getBools(level * rightLength);
+    //let fingerprint = this.getBools(level * rightLength);
+    let patterns = this.getPatterns(level * rightLength);
 
     let blockSize = size / (level + 1.236);
     let originX = (size - blockSize * level) / 2;
     let originY = originX;
 
-    let color = this.getColor();
+    let colors = this.getColors();
 
     let data = [];
     for (let col = 0; col < level; col++) {
       let col_mirror = col < rightLength ? col : level - 1 - col;
       for (let row = 0; row < level; row++) {
-        if (fingerprint[col_mirror * level + row]) {
+        let pattern = patterns[col_mirror * level + row];
+        if (pattern >= 0) {
           data.push({
             x: originX + col * blockSize,
             y: originY + row * blockSize,
             size: blockSize,
-            color: color
+            color: colors[pattern]
           });
         }
       }
